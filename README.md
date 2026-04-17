@@ -1,1 +1,2 @@
 # RFID-and-Password-Protected-Smart-Access-Control-System
+This project implements a high-security access control system using the PIC16F877A microcontroller. It features a dual-layer authentication process: RFID (SPI-based) and Keypad password entry. The system is designed with embedded C to handle real-time peripheral management, including PWM for servo-actuated door mechanics and EEPROM for non-volatile data storage of authorized credentials.
