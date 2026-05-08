@@ -1,0 +1,63 @@
+String girilenSifre = "";
+const char maske = 0xAF; 
+char gizliSifre[] = {'1'^maske, '1'^maske, '0'^maske, '6'^maske, '\0'};
+
+void loop() {
+  if (rfid.PICC_IsNewCardPresent() && rfid.PICC_ReadCardSerial()) {
+    lcd.clear(); lcd.print("CARD AUTHORIZED");
+    onay();
+    rfid.PICC_HaltA();
+  }
+
+  char tus = keypad.getKey();
+  if (tus) {
+    digitalWrite(buzzer, HIGH); delay(50); digitalWrite(buzzer, LOW);
+    if (tus == '#') {
+      bool dogruMu = true;
+      if (girilenSifre.length() == 4) {
+        for(int i=0; i<4; i++) {
+          if ((girilenSifre[i] ^ maske) != gizliSifre[i]) dogruMu = false;
+        }
+        if (dogruMu) {
+          lcd.clear(); lcd.print("ACCESS GRANTED");
+          onay();
+        } else {
+          lcd.clear(); lcd.print("INVALID PIN!");
+          red();
+        }
+      }
+      girilenSifre = "";
+    } 
+    else if (tus == '*') {
+      girilenSifre = "";
+      temizle();
+    }
+    else {
+      if (girilenSifre.length() < 4) {
+        girilenSifre += tus;
+        lcd.setCursor(girilenSifre.length()-1, 1);
+        lcd.print("*"); 
+      }
+    }
+  }
+}
+
+void onay() {
+  digitalWrite(yesilLed, HIGH);
+  digitalWrite(buzzer, HIGH); delay(100); digitalWrite(buzzer, LOW);
+  kapi.write(90); delay(3000); kapi.write(0);
+  digitalWrite(yesilLed, LOW);
+  temizle();
+}
+
+void red() {
+  digitalWrite(kirmiziLed, HIGH);
+  digitalWrite(buzzer, HIGH); delay(1000); digitalWrite(buzzer, LOW);
+  delay(500); digitalWrite(kirmiziLed, LOW);
+  temizle();
+}
+
+void temizle() {
+  lcd.clear(); lcd.print("ENTER PIN/CARD:");
+  lcd.setCursor(0, 1);
+}
